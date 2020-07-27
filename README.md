@@ -63,17 +63,19 @@ I mention a possible way to do this in the comments of the service. Basically ke
 
 - Didn't explore this option too much, but it just sounded wrong (will add more info if we want to look into this)
 
+## Set Up
+ I use Linux, so the project might be harder to set up on Windows (Docker is weird for setting up on Windows). But, all you might need is to:
+ - Import from the pom.xml file using maven
+ - Create a package of the server code - ```mvn package```
+ - Unpack the package (should be the same as in the 'build-docker.sh' script) - ```mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)```
+ - And finally build the image - for me: ```docker build -t pazzio/docker-test .``` (if you change the name of the image, change it in the back-end code aswell)
+ 
+ And then just start the server (all of the dependencies should be good).
+ Some of the dependencies might not be needed, but ones that are a must (and don't come with a spring boot project) are:
+  - com.google.guava.guava
+  - com.spotify.docker-client
+ 
 
-## Personal notes about the code
-
- I use the same code as both the **Manager** and the **Container** service since this is just a POC, and doing them seperately would just be "too much work".
- I have a shell script for building the docker image called build-docker.sh.
- Two big notes that definetely won't be the way as they are now, I did them like this because I wasn't sure as to how to fix them ,or I was too lazy to search for a solution:
-  - the Back-end Service image uses root
-   - I did this because Docker made the volume accessible only by root, but this might get fixed if we made a custom image of busybox, and had it start-up using a different user in a mutual group between the service and volume
-  - Creating the scripts using the service
-   - I did this just for testing reasons (whether i can create files and folders in the folder)
-   
 ## User Manual
 
 #### Path: GET /clear
@@ -94,3 +96,13 @@ I mention a possible way to do this in the comments of the service. Basically ke
 #### Path: GET ip address of the service/run-script
  This path should return the structure of the volume (which would be treated as a file system) as a HashMap('parentFolder':'child files and child folders').
  
+## Personal notes about the code
+
+ I use the same code as both the **Manager** and the **Container** service since this is just a POC, and doing them seperately would just be "too much work".
+ I have a shell script for building the docker image called build-docker.sh.
+ Two big notes that definetely won't be the way as they are now, I did them like this because I wasn't sure as to how to fix them ,or I was too lazy to search for a solution:
+  - the Back-end Service image uses root
+   - I did this because Docker made the volume accessible only by root, but this might get fixed if we made a custom image of busybox, and had it start-up using a different user in a mutual group between the service and volume
+  - Creating the scripts using the service
+   - I did this just for testing reasons (whether i can create files and folders in the folder)
+   
