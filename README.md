@@ -72,7 +72,8 @@ I mention a possible way to do this in the comments of the service. Basically ke
  
  Also you should check what type of a connection is needed for the Windows version (for a unix OS it should be good as it's set up - using a Unix Socket)
  And then just start the server (all of the dependencies should be good).
- Some of the dependencies might not be needed, but ones that are a must (and don't come with a spring boot project) are:
+ 
+ Some of the dependencies might not be needed (leftover from the other Docker SDKs/APIs I tried), but ones that are a must (and don't come with a spring boot project) are:
   - com.google.guava.guava
   - [com.spotify.docker-client](https://github.com/spotify/docker-client)
  
@@ -80,30 +81,30 @@ I mention a possible way to do this in the comments of the service. Basically ke
 ## User Manual
 
 #### Path: GET /clear
- Just for cleaning up all of the containers (so i can more easily manage what containers to start/stop etc. instead of having 20 containers just sitting there)
+ Just for cleaning up all of the containers (so i can more easily manage what containers to start/stop etc. instead of having 20 containers just sitting there). First you'd need to stop all of the running containers.
 
 #### Path: GET /clear-vol
  Just for cleaning up all of the volumes. You first have to stop running containers, then call **GET /clear** and then finally call this path.
 
 #### Path: GET /
- This path creates a container volume using the ['busybox'](https://hub.docker.com/_/busybox) image, and sets a volume to the container under the path of '/file-system'. It also creates the service, and sets the ['busybox'](https://hub.docker.com/_/busybox) container as a volume for it. **The ['busybox'](https://hub.docker.com/_/busybox) container won't be able to start up, I don't know why it's like this, but it is, i wasted about an hour wondering about this. It seems like when you set it up as a volume for another container, it keeps killing the main process on it which keeps it alive**.
+ This path creates a container volume using the ['busybox'](https://hub.docker.com/_/busybox) image, and sets up a volume on the container using the path '/file-system'. It also creates the service container, and sets up the ['busybox'](https://hub.docker.com/_/busybox) container as its volume. **The ['busybox'](https://hub.docker.com/_/busybox) container won't be able to start up, I don't know why it's like this, but it is, i wasted about an hour wondering about this. It seems like when you set it up as a volume for another container, it keeps killing the main process on the volume container, which is meant to keep it alive**.
 
  If this path returned 'true', that means that the containers were created without any warnings. The next step is to get the IP of the service container.
  Typing ``` docker ps ``` in the Terminal should give you a list of all the active containers, and you should search for the one with an entry point simmilar to the one in the Dockerfile. When you find it, copy the **CONTAINER ID** and then type ``` docker inspect <id> ``` and then search the JSON for a IPv4 address. Save   it in some notepad or something.
 
 #### Path: GET ip address of the service/create-file
- This path creates the script and some directories in the volume. If it returns 'true', that means that it was created.
+ This path creates the script and some directories in the volume. If it returns 'true', that means that everything was created.
  
 #### Path: GET ip address of the service/run-script
  This path should return the structure of the volume (which would be treated as a file system) as a HashMap('parentFolder':'child files and child folders').
  
 ## Personal notes about the code
 
- I use the same code as both the **Manager** and the **Container** service since this is just a POC, and doing them seperately would just be "too much work".
+ I use the same code as both the **Manager** and the **Service** since this is just a POC, and doing them seperately would just be "too much work".
  I have a shell script for building the docker image called build-docker.sh.
- Two big notes that definetely won't be the way as they are now, I did them like this because I wasn't sure as to how to fix them ,or I was too lazy to search for a solution:
+ Two big notes on the current setup which will definetely get changed in the real project are:
   - the Back-end Service image uses root
-    - I did this because Docker made the volume accessible only by root, but this might get fixed if we made a custom image of [busybox](https://hub.docker.com/_/busybox), and had it start-up using a different user in a mutual group between the service and volume
+    - I did this because Docker made the volume accessible only by root, but this might get fixed if we made a custom image of [busybox](https://hub.docker.com/_/busybox), and had it start-up using a different user in a mutual group between the service and volume container (busybox)
   - Creating the scripts using the service
-    - I did this just for testing reasons (to check whether i can create files and folders in the folder)
+    - I did this just for testing reasons (to check whether i can create files and folders in the volume)
    
