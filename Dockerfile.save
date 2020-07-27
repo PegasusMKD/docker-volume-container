@@ -1,0 +1,7 @@
+FROM openjdk:8-jdk-alpine
+RUN addgroup spring_pazzio && adduser -S spring_pazzio -G spring_pazzio
+USER spring_pazzio:spring_pazzio
+
+ARG DEPENDENCY=target/dependency
+C()mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+ENTRYPOINT ["java", "-jar", "/app.jar"]
