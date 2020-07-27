@@ -25,7 +25,8 @@ container. And it mounts those two paths. The container sees the volume's pathin
 But, since this kindof ruins the concept of isolation which docker provides, they give the option to implement them in a bit of different way.
 
 You can use parts of the container as volumes, thus getting isolation, and beside the isolation, you also get all of the features of a container (easy back-ups for example),
-and you can share volumes, so, if we want to add a volume to that container for keeping the images for the angular front-end, we can use the same container.
+and you can share volumes, so, if we want to add a volume to that container for keeping the images for the angular front-end, we can use the same container. We can also extract
+the entire volume as a folder if we might need it using ```docker cp <container id>:/file-system .```.
 
 I think that the 'busybox' image is great, it's lightweight (1.22 Mb) and gives us most of the unix commands which we might need.
 
