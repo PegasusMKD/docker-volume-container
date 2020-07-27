@@ -102,7 +102,7 @@ I mention a possible way to do this in the comments of the service. Basically ke
  I have a shell script for building the docker image called build-docker.sh.
  Two big notes that definetely won't be the way as they are now, I did them like this because I wasn't sure as to how to fix them ,or I was too lazy to search for a solution:
   - the Back-end Service image uses root
-   - I did this because Docker made the volume accessible only by root, but this might get fixed if we made a custom image of [busybox](https://hub.docker.com/_/busybox), and had it start-up using a different user in a mutual group between the service and volume
+    - I did this because Docker made the volume accessible only by root, but this might get fixed if we made a custom image of [busybox](https://hub.docker.com/_/busybox), and had it start-up using a different user in a mutual group between the service and volume
   - Creating the scripts using the service
-   - I did this just for testing reasons (whether i can create files and folders in the folder)
+    - I did this just for testing reasons (whether i can create files and folders in the folder)
    
