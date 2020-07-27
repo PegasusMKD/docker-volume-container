@@ -18,8 +18,8 @@ the manager can just turn up the last snapshot of whichever container went down.
 
 #### Docker Volume Container
 
-Docker has a feature called 'volumes' for persisting data (since when a container "dies" it loses everything stored within it, and it rebuilds). This is usually used for
-keeping database. How it works, on a concept level, either you designate a two paths for it, or it designates the host one on it's own, and you just designate the one on the
+Docker has a feature called 'volumes' for persisting data (since when a container "dies" it loses everything stored within it, and it rebuilds). This feature is usually used for
+keeping database. How it works, on a concept level is, either you designate two paths for it, or it designates the host one on it's own, and you just designate the one on the
 container. And it mounts those two paths. The container sees the volume's pathing as just a regular folder, with which it can do any type of IO.
 
 But, since this kindof ruins the concept of isolation which docker provides, they give the option to implement them in a bit of different way.
@@ -40,9 +40,9 @@ And then, dependending on the needs, call them using the Java Runtime, and get t
 
 #### Back-end Server
 
-This is the service with the main bussiness logic. It will contain all of the shell scripts and it can make use of them as it needs to.
+This is the service with the main bussiness logic. It will contain all of the shell scripts (either in the resource folder or through the volume) and it can make use of them as it needs to.
 
-I mention a possible way to do this in the comments of the service. Basically keep the possible commands in a HashMap, and then dependent on the url parameter given, run the appropriate script and return the result. (It should always be a String)
+I mention a possible way to do this in the comments of the service. Basically keep the possible commands in a HashMap, and then dependent on the url parameter given, run the appropriate script and return the result. (We could always return it as a String and have the middleware tidy up the data, or **maybe**, make use of generics or a generic object, not sure on this one)
 
 ## Docker Container Volumes vs.
 
@@ -64,12 +64,13 @@ I mention a possible way to do this in the comments of the service. Basically ke
 - Didn't explore this option too much, but it just sounded wrong (will add more info if we want to look into this)
 
 ## Set Up
- I use Linux, so the project might be harder to set up on Windows (Docker is weird for setting up on Windows). But, all you might need is to:
+ I use Ubuntu, so the project might be harder to set up on Windows (Docker is weird for setting up on Windows). But, all you might need is to:
  - Import from the pom.xml file using maven
  - Create a package of the server code - ```mvn package```
  - Unpack the package (not sure about how the command would be on a Windows system, used it from the [Spring docs](https://spring.io/guides/gs/spring-boot-docker/)) - ```mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)```
  - And finally build the image - for me: ```docker build -t pazzio/docker-test .``` (if you change the name of the image, change it in the back-end code aswell)
  
+ Also you should check what type of a connection is needed for the Windows version (for a unix OS it should be good as it's set up - using a Unix Socket)
  And then just start the server (all of the dependencies should be good).
  Some of the dependencies might not be needed, but ones that are a must (and don't come with a spring boot project) are:
   - com.google.guava.guava
@@ -104,5 +105,5 @@ I mention a possible way to do this in the comments of the service. Basically ke
   - the Back-end Service image uses root
     - I did this because Docker made the volume accessible only by root, but this might get fixed if we made a custom image of [busybox](https://hub.docker.com/_/busybox), and had it start-up using a different user in a mutual group between the service and volume
   - Creating the scripts using the service
-    - I did this just for testing reasons (whether i can create files and folders in the folder)
+    - I did this just for testing reasons (to check whether i can create files and folders in the folder)
    
