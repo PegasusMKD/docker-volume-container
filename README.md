@@ -66,5 +66,31 @@ I mention a possible way to do this in the comments of the service. Basically ke
 
 ## Personal notes about the code
 
+ I use the same code as both the **Manager** and the **Container** service since this is just a POC, and doing them seperately would just be "too much work".
+ I have a shell script for building the docker image called build-docker.sh.
+ Two big notes that definetely won't be the way as they are now, I did them like this because I wasn't sure as to how to fix them ,or I was too lazy to search for a solution:
+  - the Back-end Service image uses root
+   - I did this because Docker made the volume accessible only by root, but this might get fixed if we made a custom image of busybox, and had it start-up using a different user in a mutual group between the service and volume
+  - Creating the scripts using the service
+   - I did this just for testing reasons (whether i can create files and folders in the folder)
+   
+## User Manual
+
+#### Path: GET /clear
+ Just for cleaning up all of the containers (so i can more easily manage what containers to start/stop etc. instead of having 20 containers just sitting there)
+
+#### Path: GET /clear-vol
+ Just for cleaning up all of the volumes. You first have to stop running containers, then call **GET /clear** and then finally call this path.
+
+#### Path: GET /
+ This path creates a container volume using the 'busybox' image, and sets a volume to the container under the path of '/file-system'. It also creates the service, and sets the 'busybox' container as a volume for it. **The 'busybox' container won't be able to start up, I don't know why it's like this, but it is, i wasted about an hour wondering about this. It seems like when you set it up as a volume for another container, it keeps killing the main process on it which keeps it alive**.
+
+ If this path returned 'true', that means that the containers were created without any warnings. The next step is to get the IP of the service container.
+ Typing ``` docker ps ``` in the Terminal should give you a list of all the active containers, and you should search for the one with an entry point simmilar to the one in the Dockerfile. When you find it, copy the **CONTAINER ID** and then type ``` docker inspect <id> ``` and then search the JSON for a IPv4 address. Save   it in some notepad or something.
+
+#### Path: GET ip address of the service/create-file
+ This path creates the script and some directories in the volume. If it returns 'true', that means that it was created.
  
+#### Path: GET ip address of the service/run-script
+ This path should return the structure of the volume (which would be treated as a file system) as a HashMap('parentFolder':'child files and child folders').
  
